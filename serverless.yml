@@ -1,0 +1,78 @@
+service: card-game-cards
+
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+  - serverless-dynamodb-local
+ 
+custom:
+  tableName: 'cards-table-${self:provider.stage}'
+  wsgi:
+    app: app.app
+    packRequirements: false
+  pythonRequirements:
+    dockerizePip: false
+  dynamodb:
+    stages:
+      - dev
+    start:
+      migrate: true
+ 
+provider:
+  name: aws
+  runtime: python3.9
+  stage: dev
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": ["CardsDynamoDBTable", "Arn" ] }
+  environment:
+    CARDS_TABLE: ${self:custom.tableName}
+ 
+functions:
+  app:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY /
+      - http: ANY /{proxy+}
+
+resources:
+  Resources:
+    CardsDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: cardId
+            AttributeType: S
+          -
+            AttributeName: userId
+            AttributeType: S
+          -
+            AttributeName: type
+            AttributeType: S
+          -
+            AttributeName: content
+            AttributeType: S
+          -
+            AttributeName: isOpen
+            AttributeType: BOOL
+        KeySchema:
+          -
+            AttributeName: cardId
+            KeyType: HASH
+          -
+            AttributeName: isOpen
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.tableName}

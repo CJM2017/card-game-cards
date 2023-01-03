@@ -1,0 +1,24 @@
+{
+  "name": "card-game-cards",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CJM2017/card-game-cards.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CJM2017/card-game-cards/issues"
+  },
+  "homepage": "https://github.com/CJM2017/card-game-cards#readme",
+  "devDependencies": {
+    "serverless-python-requirements": "^6.0.0",
+    "serverless-wsgi": "^3.0.1"
+  }
+}
